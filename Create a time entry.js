@@ -3,7 +3,7 @@ const myHeaders = new Headers();
 const userName = "email address or API KEY here";
 const password = "password";
 const siteName = "yourSiteName"
-const taskId = "userIdHere"
+const taskId = "taskIdHere"
 myHeaders.append("Content-Type", "application/json");
 myHeaders.append("Authorization", "Basic "+btoa(userName+":"+password));
 
