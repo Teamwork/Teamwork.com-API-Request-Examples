@@ -16,9 +16,13 @@ const raw = JSON.stringify({
         userId
       ]
     },
+    "priority": "medium",
     "startAt": "2024-04-16",
     "dueAt": "2024-04-24",
     "description": "[Create a task endpoint](https://apidocs.teamwork.com/docs/teamwork/v3/tasks/post-projects-api-v3-tasklists-tasklist-id-tasks-json)"
+  },
+  "taskOptions" :{
+      "notify": true
   }
 });
 
