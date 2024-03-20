@@ -27,7 +27,7 @@ const raw = JSON.stringify({
   },
   "card": {
       "columnId": columnId
-  }
+  }//Remove this object if you are not setting a column
 });
 
 const requestOptions = {
