@@ -4,6 +4,7 @@ const password = "password";
 const siteName = "yourSiteName"
 const taskListId = taskListIdHere//integer
 const userId = userIdHere//integer
+const columnId = columnIdHere//integer
 myHeaders.append("Content-Type", "application/json");
 myHeaders.append("Authorization", "Basic "+btoa(userName+":"+password));
 
@@ -23,6 +24,9 @@ const raw = JSON.stringify({
   },
   "taskOptions" :{
       "notify": true
+  },
+  "card": {
+      "columnId": columnId
   }
 });
 
