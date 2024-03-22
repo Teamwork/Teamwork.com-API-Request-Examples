@@ -18,7 +18,7 @@ const raw = JSON.stringify({
   "event": {
     "title": "Unavailable",
     "attending-user-ids": userId,
-    "description": "Via API for ticket (unavailability 4hr/day)",
+    "description": "Via API for ticket (unavailability 4hr)",
     "start": "2024-04-10T09:00",//yyyy-mm-ddThh:mm
     "end": "2024-04-11T17:00",//yyyy-mm-ddThh:mm (Set date higher than start date to set unavailable time across multiple days)
     "ranges": [
@@ -29,7 +29,7 @@ const raw = JSON.stringify({
         "unavailableTimes": [
           {
             "userId": userId,
-            "durationMinutes": 240,//time in minutes
+            "durationMinutes": 240,//time in minutes (Time is spread evenly across multiple days if appliciable)
             //"date": "2024-04-10"//yyyy-mm-dd (Remove this property if you are setting unavailable time across multiple days)
           }
         ]
