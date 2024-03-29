@@ -3,8 +3,8 @@ const userName = "email address or API KEY here";
 const password = "password";
 const siteName = "yourSiteName"
 const taskId = "taskIdHere"
-const creatorId = "creatorIdHere"
-const completerId = "completerIdHere"
+const creatorId = "userIdHere"
+const completerId = "userIdHere"
 const completedOn = "completedOnHere"//yyyyMMddhhmmss
 myHeaders.append("Content-Type", "application/json");
 myHeaders.append("Authorization", "Basic "+btoa(userName+":"+password));
