@@ -1,7 +1,7 @@
 # Teamwork.com-HTTP-Post-Request-Examples
 
 ## Introduction
-This repository aims to provide simple yet comprehensive collection of code examples to facilitate making POST, PUT and PATCH requests with the Teamwork.com API. This is a great place for you to get started building your own application on top of the Teamwork.com platform.
+This repository aims to provide simple yet comprehensive collection of code examples to facilitate making POST, PUT and PATCH requests with the [Teamwork.com API](https://apidocs.teamwork.com/docs/teamwork). This is a great place for you to get started building your own application on top of the Teamwork.com platform.
 
 ## Contents
 
