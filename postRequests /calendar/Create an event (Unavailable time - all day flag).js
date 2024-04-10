@@ -19,22 +19,13 @@ const raw = JSON.stringify({
     "title": "Unavailable",
     "attending-user-ids": userId,
     "description": "Via API for ticket (unavailability - all day)",
-    "start": "2024-04-15T09:00",//yyyy-mm-ddThh:mm
-    "end": "2024-04-15T17:00",//yyyy-mm-ddThh:mm (Set date higher than start date to set unavailable time across multiple days)
+    "start": "2024-04-15",//yyyy-mm-dd
+    "end": "2024-04-15",//yyyy-mm-dd (Set date higher than start date to set unavailable time across multiple days)
     "ranges": [
       {
-        "start": "2024-06-27T09:00",
-        "end": "2024-06-27T17:00",
+        "start": "2024-06-27",
+        "end": "2024-06-27",
         "attending-user-ids": userId,
-        "unavailableTimes": [
-          {
-            "userId": userId,
-            "durationMinutes": 480,
-            //"date": "2024-04-15"//yyyy-mm-dd (Remove this property if you are setting unavailable time across multiple days)
-          }
-        ]
-      }
-    ],
     "type": {
       "color": "ff0000",
       "unavailable": true,
