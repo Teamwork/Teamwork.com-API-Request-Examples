@@ -1,0 +1,68 @@
+const myHeaders = new Headers();
+const userName = "email address or API KEY here";
+const password = "password";
+const siteName = "yourSiteName"
+const userId1 = "userId1Here"
+const userId2 = "userId2Here"
+const userIds = userId1+","+userId2Here//comma separate userids if the event is being logged for multiple users
+myHeaders.append("Content-Type", "application/json");
+myHeaders.append("Authorization", "Basic " + btoa(userName + ":" + password));
+
+/*Event type id's:
+-2 : Paid Time off
+-3 : Sick Leave
+-4 : Meeting
+-5 : Other
+-6 : Training
+-7 : Public Holiday*/
+
+const raw = JSON.stringify({
+  "event": {
+    "title": "Unavailable",
+    "attending-user-ids": userIds,
+    "description": "Via API for ticket (unavailability 9hr/total/user)",
+    "start": "2024-04-15",//yyyy-mm-dd
+    "end": "2024-04-16",//yyyy-mm-dd (Set date higher than start date to set unavailable time across multiple days)
+    "ranges": [
+      {
+        "start": "2024-04-17",//yyyy-mm-dd
+        "end": "2024-04-19",//yyyy-mm-dd (Set date higher than start date to set unavailable time across multiple days)
+        "attending-user-ids": userIds,
+        "unavailableTimes": [
+          {
+            "userId": userId1,
+            "durationMinutes": 540
+          },
+          {
+            "userId": userId2,
+            "durationMinutes": 540
+          }
+        ]
+      }
+    ],
+    "type": {
+      "color": "00ffff",
+      "unavailable": true,
+      "id": -6,
+      "name": "Training"
+    },
+    "all-day": false,
+    "utc": true,
+    "attendees-can-edit": true,
+    "privacy": {
+      "type": "all"
+    }
+  }
+});
+
+const requestOptions = {
+  method: "POST",
+  headers: myHeaders,
+  body: raw,
+  redirect: "follow"
+};
+
+fetch("https://" + siteName + ".teamwork.com/calendarevents.json", requestOptions)
+  .then((response) => response.text())
+  .then((result) => console.log(result))
+  .catch((error) => console.error(error));
