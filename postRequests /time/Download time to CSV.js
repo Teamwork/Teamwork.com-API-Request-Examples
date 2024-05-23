@@ -3,9 +3,9 @@ const installId = "installIdHere";
 const userId = "userIdHere";
 const tw_key = "tw_keyHere";
 const reportType = "reportTypeHere"//Other formats: excel, pdf,
-const startDate = "startDateHere"
-const endDate = "endDateHere"
-const projectId = "projectIdHere"
+const startDate = "startDateHere"// YYYYMMDD - Not required (Leave blank quotes) 
+const endDate = "endDateHere"// YYYYMMDD - Not required (Leave blank quotes)
+const projectId = "projectIdHere"// Leave blank quotes if you are reporting on all time
 const urlencoded = new URLSearchParams();
 urlencoded.append("action", "Time_DownloadReport");
 urlencoded.append("reportType", "csv");
