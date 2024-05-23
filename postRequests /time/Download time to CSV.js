@@ -1,13 +1,17 @@
 const myHeaders = new Headers();
 const installId = "installIdHere";
 const userId = "userIdHere";
-const tw_key = tw_keyHere;
+const tw_key = "tw_keyHere";
+const reportType = "reportTypeHere"//Other formats: excel, pdf,
+const startDate = "startDateHere"
+const endDate = "endDateHere"
+const projectId = "projectIdHere"
 const urlencoded = new URLSearchParams();
 urlencoded.append("action", "Time_DownloadReport");
 urlencoded.append("reportType", "csv");
-urlencoded.append("startDate", "20240301");
-urlencoded.append("endDate", "20240531");
-urlencoded.append("projectId", "732893");
+urlencoded.append("startDate", startDate);
+urlencoded.append("endDate", endDate);
+urlencoded.append("projectId", projectId);
 urlencoded.append("userId", "");
 urlencoded.append("teamIds", "");
 urlencoded.append("invoicedType", "all");
