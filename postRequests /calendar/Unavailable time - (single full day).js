@@ -8,20 +8,38 @@ myHeaders.append("Authorization", "Basic " + btoa(userName + ":" + password));
 
 const raw = JSON.stringify({
   "event": {
-    "id": 0,
     "title": "Unavailable",
     "attending-user-ids": userId,
+    "description": "Meeting all day",
+    "start": "2024-05-31T09:00",//yyyy-mm-ddThh:mm
+    "end": "2024-05-31T17:00",//yyyy-mm-ddThh:mm
+    "ranges": [
+      {
+        "start": "2024-05-31T09:00",//yyyy-mm-ddThh:mm
+        "end": "2024-05-31T17:00",//yyyy-mm-ddThh:mm
+        "attending-user-ids": userId,
+        "unavailableTimes": [
+          {
+            "userId": userId,
+            "durationMinutes": 480,
+            "date": "2024-05-31T09:00"//yyyy-mm-ddThh:mm
+          }
+        ]
+      }
+    ],
     "type": {
       "color": "0000ff",
-      "unavailable": true,
-      "id": -4,
-      "name": "Meeting"
+      "unavailable": "1",
+      "id": "-4",
+      "name": "Meeting",
+      "translatedName": "Meeting"
     },
-    "description": "Via API for ticket (unavailability)",
-    "start": "2024-06-18T09:00",//yyyy-mm-ddThh:mm
-    "end": "2024-06-18T17:00",//yyyy-mm-ddThh:mm
     "all-day": true,
-    "attendees-can-edit": true
+    "utc": true,
+    "attendees-can-edit": true,
+    "privacy": {
+      "type": "all"
+    }
   }
 });
 
