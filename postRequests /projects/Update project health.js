@@ -26,7 +26,7 @@ const requestOptions = {
     redirect: "follow"
 };
 
-fetch("https://" + siteName + "/projects/"+projectId+"/update.json", requestOptions)
+fetch("https://" + siteName + ".teamwork.com/projects/"+projectId+"/update.json", requestOptions)
     .then((response) => response.text())
     .then((result) => console.log(result))
     .catch((error) => console.error(error));
