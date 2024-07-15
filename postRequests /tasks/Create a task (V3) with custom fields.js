@@ -12,7 +12,7 @@ myHeaders.append("Authorization", "Basic "+btoa(userName+":"+password));
 const raw = JSON.stringify({
   "task": {
     "tasklistId": taskListId,
-    "name": "Creating a task from the Teamwork.com API1",
+    "name": "Creating a task from the Teamwork.com API",
     "assignees": {
       "userIds": [
         userId
