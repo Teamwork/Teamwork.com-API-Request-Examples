@@ -1,3 +1,5 @@
+// This code sample is an example of some of the response headers data that is available with the V2 time entries endpoint. 
+// Endpoint Url: https://" + siteName + ".teamwork.com/projects/api/v2/time.json
 const myHeaders = new Headers();
 const userName = "email address or API KEY here";
 const password = "password";
@@ -16,7 +18,7 @@ const requestOptions = {
 async function fetcHeaders() {
     let latestActivityUrl = "https://" + siteName + ".teamwork.com/projects/api/v2/time.json?page=" + page + "&pageSize=50&getTotals=true&projectId=&companyId=0&userId=&assignedTeamIds=&invoicedType=all&billableType=all&fromDate=&toDate=&sortBy=date&sortOrder=asc&onlyStarredProjects=false&includeArchivedProjects=false&matchAllTags=true&projectStatus=all"
     const response = await fetch(latestActivityUrl, requestOptions)
-    //console.log(response.headers)
+    //console.log(response.headers) // Remove commenting at the start of this console log to get a full list of response headers for the endpoint
     console.log("\nHeaders - Page and rate limit info")
     console.log("Total records for request: " + response.headers.get('x-records'))
     console.log("Total pages: " + response.headers.get('x-pages'))
