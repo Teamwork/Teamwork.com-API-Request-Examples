@@ -3,9 +3,9 @@ const myHeaders = new Headers();
 const userName = "email address or API KEY here";
 const password = "password";
 const siteName = "yourSiteName";
-const projectId = "projectIdHere";
-const taskId = "taskIdHere";
-const userId = "userIdHere";
+const projectId = projectIdHere; // Int
+const taskId = taskIdHere; // Int - Add a 0 for taskId if you want to log time at project level only
+const userId = userIdHere; // Int
 const date = "dateHere";
 const time = "timeHere";
 myHeaders.append("Content-Type", "application/json");
