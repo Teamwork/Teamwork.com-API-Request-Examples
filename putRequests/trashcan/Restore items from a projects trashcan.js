@@ -1,5 +1,6 @@
 // https://apidocs.teamwork.com/docs/teamwork/v1/trashcan/put-trashcan-resource-id-restore-json
 // This script will restore items from a projects trashcan if they were deleted within 30 days - this scenario will restore a deleted timelog if it exists
+// Use the `get a project resources in the trashcan` endpoint to get a list of resources and their ids if they exist in the trashcan. https://apidocs.teamwork.com/docs/teamwork/v1/trashcan/get-trashcan-projects-id-json
 const myHeaders = new Headers();
 const userName = "email address or API KEY here";
 const password = "password";
