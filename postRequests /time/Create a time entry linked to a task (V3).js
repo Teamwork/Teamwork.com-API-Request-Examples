@@ -6,8 +6,8 @@ const siteName = "yourSiteName";
 const projectId = projectIdHere; // Int
 const taskId = taskIdHere; // Int - Add a 0 for taskId if you want to log time at project level only
 const userId = userIdHere; // Int
-const date = "dateHere";
-const time = "timeHere";
+const date = "dateHere"; // ie: "2024-01-23" - Format: "yyyy-mm-dd"
+const time = "timeHere"; // ie: "17:18:00" - Format: "hh:mm:ss"
 myHeaders.append("Content-Type", "application/json");
 myHeaders.append("Authorization", "Basic "+btoa(userName+":"+password));
 
