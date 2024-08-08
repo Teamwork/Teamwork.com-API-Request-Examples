@@ -17,12 +17,9 @@ function onOpen() {
 
 // requestTimezones will call the timezone endpoint and store data for later to compare with users timezone preference
 function requestTimezones() {
-  
-  // Credentials and request header data
-  var APIKey = "";//username used to log into Teamwork.com - preferably a Site admin so there are no hidden timelogs
-  var TeamworkURL = "";//site domain - ie: https://yourSiteName.teamwork.com
-  var Pass = "";// User password linked to username above to log into Teamwork.com
-  
+  var APIKey = "cashmanmarc@yahoo.ie";
+  var TeamworkURL = "https://marccashman.teamwork.com";
+  var Pass = "Rokmin@34";
   var headers = {
     "Authorization": "Basic " + Utilities.base64Encode(APIKey + ':' + Pass)
   };
@@ -36,7 +33,7 @@ function requestTimezones() {
   const timezoneUrl = TeamworkURL + "/timezones.json";
   const timezoneResponse = UrlFetchApp.fetch(timezoneUrl, params);
   const timezoneJsonData = JSON.parse(timezoneResponse);
-  
+
   return timezoneJsonData;
 }
 
@@ -63,18 +60,16 @@ function getUserTimeZone(allTimezones, userTimezoneName) {
 // getZoneTime will iterate through the V3 time entries endpoint > populate time entries to a Google Sheet based on how time appears in the UI for the user which the time is logged for
 function getTime() {
   var allTimezones = requestTimezones();
-  
-  // Google Workbook URL
-  // https://docs.google.com/spreadsheets/d/12whojXASwtAW-ojaWUr-EA3atKnRcpej4CXmMa4vL-g/edit
-  var ss = SpreadsheetApp.openById('12whojXASwtAW-ojaWUr-EA3atKnRcpej4CXmMa4vL-g'); // Please add your workbook id here
+
+  //https://docs.google.com/spreadsheets/d/10g66jWa3jqpKjDy1Rpt-an5L86tAxLPNTMuY3flMF4Y/edit?gid=0#gid=0
+  var ss = SpreadsheetApp.openById('10g66jWa3jqpKjDy1Rpt-an5L86tAxLPNTMuY3flMF4Y');
   var settingsSheet = ss.getSheetByName('Settings');
   const timeReportSheet = ss.getSheetByName('Get time report');
-  
-  // Credentials and request header data
-  var APIKey = "";//username used to log into Teamwork.com - preferably a Site admin so there are no hidden timelogs
-  var TeamworkURL = "";//site domain - ie: https://yourSiteName.teamwork.com
-  var Pass = "";// User password linked to username above to log into Teamwork.com
-  
+
+  var APIKey = "cashmanmarc@yahoo.ie";
+  var TeamworkURL = "https://marccashman.teamwork.com";
+  var Pass = "Rokmin@34";
+
   // Settings tab from Google Sheet
   const pageSize = settingsSheet.getRange("B2").getValue(); // Capture endpoint page size (max 500)
   const pages = settingsSheet.getRange("B3").getValue(); // Capture endpoint page count
@@ -83,14 +78,14 @@ function getTime() {
   const projectIds = settingsSheet.getRange("B6").getValue(); // Filter by a project, group of projects or all projects
   const userIds = settingsSheet.getRange("B7").getValue(); // Filter by a user, group of userss or all users
   const includeArchivedProjects = settingsSheet.getRange("B8").getValue(); // Capture if archived projects are to be included or not
-  
+
   timeReportSheet.clear();
 
   // Generate new header row and column header names
   var header = [["Time Id", "Time Description", "Time logged (User Perspective)", "User", "Timelog Duration", "Is Billable", "Project Id", "Task Id", "Users Time Zone", "Date / Start time (DB record)"]];
   var range = timeReportSheet.getRange(timeReportSheet.getLastRow() + 1, 1, header.length, header[0].length);
   range.setValues(header);
-
+  console.log("here")
 
   var headers = {
     "Authorization": "Basic " + Utilities.base64Encode(APIKey + ':' + Pass)
@@ -113,52 +108,58 @@ function getTime() {
     const userData = timeJsonData.included.users;
     const metaData = timeJsonData.meta.page;
 
-    for (var i = 0; i < timeData.length; i++) {
-      var time = timeData[i];
-      var timezone = userData[time.userId].timezone.toString();
-      console.log(time.id + " " + time.description + " " + time.timeLogged + " " + time.userId + " "
-        + time.minutes + " " + time.isBillable + " " + time.projectId + " " + time.taskId + " " + timezone + " " + userData[time.userId].timezone)
-      var timezoneDiff = getUserTimeZone(allTimezones, userData[time.userId].timezone);
-      var date = Utilities.formatDate(new Date(time.timeLogged), "GMT", "dd-MM-yyyy hh:mm");
+    if (timeData.length != 0) {
+      for (var i = 0; i < timeData.length; i++) {
+        console.log("in funct")
+        var time = timeData[i];
+        var timezone = userData[time.userId].timezone.toString();
+        console.log(time.id + " " + time.description + " " + time.timeLogged + " " + time.userId + " "
+          + time.minutes + " " + time.isBillable + " " + time.projectId + " " + time.taskId + " " + timezone + " " + userData[time.userId].timezone)
+        var timezoneDiff = getUserTimeZone(allTimezones, userData[time.userId].timezone);
+        var date = Utilities.formatDate(new Date(time.timeLogged), "GMT", "dd-MM-yyyy hh:mm");
 
-      var user = timeJsonData.included.users[time.userId.toString()].firstName + " "
-        + timeJsonData.included.users[time.userId.toString()].lastName;
+        var user = timeJsonData.included.users[time.userId.toString()].firstName + " "
+          + timeJsonData.included.users[time.userId.toString()].lastName;
 
-      var projectUrl = TeamworkURL + "/app/projects/" + time.projectId.toString() + "/time";
-      var projectUrlParsed = "=HYPERLINK(\"" + projectUrl + "\",\"" + time.projectId + "\")";
+        var projectUrl = TeamworkURL + "/app/projects/" + time.projectId.toString() + "/time";
+        var projectUrlParsed = "=HYPERLINK(\"" + projectUrl + "\",\"" + time.projectId + "\")";
 
-      if (time.taskId != null) {
-        var taskUrl = TeamworkURL + "/app/tasks/" + time.taskId.toString();
-        var taskUrlParsed = "=HYPERLINK(\"" + taskUrl + "\",\"" + time.taskId + "\")";
-      } else {
-        var taskUrlParsed = "No Task";
+        if (time.taskId != null) {
+          var taskUrl = TeamworkURL + "/app/tasks/" + time.taskId.toString();
+          var taskUrlParsed = "=HYPERLINK(\"" + taskUrl + "\",\"" + time.taskId + "\")";
+        } else {
+          var taskUrlParsed = "No Task";
+        }
+
+        timeValues.push(
+          [
+            time.id,
+            time.description,
+            "=J" + (rows) + timezoneDiff,
+            user,
+            toHoursAndMinutes(time.minutes),
+            time.isBillable,
+            projectUrlParsed,
+            taskUrlParsed,
+            timezone,
+            date,
+          ]
+        );
+        rows++
+
       }
-
-      timeValues.push(
-        [
-          time.id,
-          time.description,
-          "=J" + (rows) + timezoneDiff,
-          user,
-          toHoursAndMinutes(time.minutes),
-          time.isBillable,
-          projectUrlParsed,
-          taskUrlParsed,
-          timezone,
-          date,
-        ]
-      );
-      rows++
-    }
-    if (metaData.hasMore == false) {
+      if (metaData.hasMore == false) {
+        page = pages + 1
+      }
+      // Populate Sheet with data and format specific columns
+      timeReportSheet.getRange(timeReportSheet.getLastRow() + 1, 1, timeValues.length, timeValues[0].length).setValues(timeValues);
+      timeReportSheet.getRange("C:C").setHorizontalAlignment('center');
+      timeReportSheet.getRange("E:E").setHorizontalAlignment('center');
+      timeReportSheet.getRange("J:J").setHorizontalAlignment('center');
+    } else {
       page = pages + 1
     }
   }
-  // Populate Sheet with data and format specific columns
-  timeReportSheet.getRange(timeReportSheet.getLastRow() + 1, 1, timeValues.length, timeValues[0].length).setValues(timeValues);
-  timeReportSheet.getRange("C:C").setHorizontalAlignment('center');
-  timeReportSheet.getRange("E:E").setHorizontalAlignment('center');
-  timeReportSheet.getRange("J:J").setHorizontalAlignment('center');
 }
 
 // toHoursAndMinutes will capture minutes logged for timelog and convert to hours and minutes
