@@ -18,7 +18,6 @@ var page = 1
 var setValues = true;
 
 function getProjects() {
-  //https://docs.google.com/spreadsheets/d/{addYourSheetIdHere}/edit#gid=0
   const ss = SpreadsheetApp.openById(GoogleSheetId);
   const settingsSheet = ss.getSheetByName('Settings');
   const projectSheet = ss.getSheetByName('Projects Report');
