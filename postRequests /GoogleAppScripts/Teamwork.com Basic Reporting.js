@@ -1,3 +1,17 @@
+/*
+Proof of Concept script for using the Teamwork.com V3 API endpoints to populate a Google sheet with 
+a) Basic project data, b) basic Task data and c) basic time entry data.
+Settings page on linked Google sheet can be used to filter endpoints for page size, date ranges, user(s) and project(s) including archived projects and completed tasks
+Endpoint used; 
+Returns a list of projects > https://apidocs.teamwork.com/docs/teamwork/v3/time-tracking/get-projects-api-v3-time-json
+Get all tasks > https://apidocs.teamwork.com/docs/teamwork/v3/tasks/get-projects-api-v3-tasks-json
+Get all time entries > https://apidocs.teamwork.com/docs/teamwork/v3/time-tracking/get-projects-api-v3-time-json
+V1 Get timezones > https://apidocs.teamwork.com/docs/teamwork/v1/timezones/get-timezones-json
+Author: Marc Cashman <marc.cashman@teamwork.com>
+Version: 1.1
+THE SCRIPT IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SCRIPT OR THE USE OR OTHER DEALINGS IN THE SCRIPT.
+*/
+
 // https://docs.google.com/spreadsheets/d/{addYourSheetIdHere}/edit?gid=0#gid=0
 function onOpen() {
   const ui = SpreadsheetApp.getUi();
@@ -199,7 +213,6 @@ function getTasks() {
 
 // getTime will iterate through the V3 time entries endpoint > populate time entries to a Google Sheet based on how time appears in the UI for the user which the time is logged for
 function getTime() {
-  // https://docs.google.com/spreadsheets/d/{addYourSheetIdHere}/edit#gid=0
   const allTimezones = requestTimezones();
   const ss = SpreadsheetApp.openById(GoogleSheetId);
   const settingsSheet = ss.getSheetByName('Settings');
