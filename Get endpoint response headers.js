@@ -19,11 +19,13 @@ const requestOptions = {
 async function fetcHeaders() {
     let latestActivityUrl = "https://" + siteName + ".teamwork.com/projects/api/v2/time.json?page=" + page + "&pageSize=50&getTotals=true&projectId=&companyId=0&userId=&assignedTeamIds=&invoicedType=all&billableType=all&fromDate=20240701&toDate=20240731&sortBy=date&sortOrder=asc&onlyStarredProjects=false&includeArchivedProjects=false&matchAllTags=true&projectStatus=all"
     const response = await fetch(latestActivityUrl, requestOptions)
+    let data = await response.json()
     //console.log(response.headers) // Remove commenting at the start of this console log to get a full list of response headers for the endpoint
     console.log("\nHeaders - Page and rate limit info")
     console.log("Total records for request: " + response.headers.get('x-records'))
     console.log("Total pages: " + response.headers.get('x-pages'))
     console.log("Current page: " + response.headers.get('x-page'))
+    console.log("Total records on current page: " + data.timeEntries.length)
     console.log("x-ratelimit-limit: " + response.headers.get('x-ratelimit-limit'))
     console.log("x-ratelimit-remaining: " + response.headers.get('x-ratelimit-remaining'))
 
