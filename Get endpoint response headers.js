@@ -21,7 +21,7 @@ async function fetcHeaders() {
     //let v1TimeUrl = "https://" + siteName + ".teamwork.com/time_entries.json?page=" + page + "&pageSize=50&getTotals=true&projectId=&companyId=0&userId=&assignedTeamIds=&invoicedType=all&billableType=all&fromDate=20240101&toDate=20240731&sortBy=date&sortOrder=asc&onlyStarredProjects=false&includeArchivedProjects=true&matchAllTags=true&projectStatus=all";
     let v2TimeUrl = "https://" + siteName + ".teamwork.com/projects/api/v2/time.json?page=" + page + "&pageSize=50&getTotals=true&projectId=&companyId=0&userId=&assignedTeamIds=&invoicedType=all&billableType=all&fromDate=20240101&toDate=20240731&sortBy=date&sortOrder=asc&onlyStarredProjects=false&includeArchivedProjects=true&matchAllTags=true&projectStatus=all";
     
-    const response = await fetch(latestActivityUrl, requestOptions)
+    const response = await fetch(v2TimeUrl, requestOptions)
     let data = await response.json()
     
     //console.log(response.headers) // Remove commenting at the start of this console log to get a full list of response headers for the endpoint
