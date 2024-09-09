@@ -1,4 +1,4 @@
-//https://apidocs.teamwork.com/docs/teamwork/v1/task-reminders/post-tasks-id-reminders-json
+//https://apidocs.teamwork.com/docs/teamwork/v1/time-tracking/post-tasks-id-time-entries-json
 const myHeaders = new Headers();
 const userName = "email address or API KEY here";
 const password = "password";
