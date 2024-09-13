@@ -1,3 +1,5 @@
+// This code sample will create a task > assign to a user or users if more are added > notify user(s) > put task on a column if an id is supplied
+// Endpoint documentation: https://apidocs.teamwork.com/docs/teamwork/v3/tasks/post-projects-api-v3-tasklists-tasklist-id-tasks-json
 const myHeaders = new Headers();
 const userName = "email address or API KEY here";
 const password = "password";
@@ -23,7 +25,7 @@ const raw = JSON.stringify({
     "description": "[Create a task endpoint](https://apidocs.teamwork.com/docs/teamwork/v3/tasks/post-projects-api-v3-tasklists-tasklist-id-tasks-json)"
   },
   "taskOptions" :{
-      "notify": true
+      "notify": true // Set to false if no notification is required
   },
   "card": {
       "columnId": columnId
