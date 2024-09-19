@@ -1,6 +1,7 @@
 // This code sample will add or update custom fields on a project
 // Endpoint: https://apidocs.teamwork.com/docs/teamwork/v1/projects/put-projects-id-json
 // To get project custom field id's use: https://apidocs.teamwork.com/docs/teamwork/v3/custom-fields/get-projects-api-v3-customfields-json
+// Caveat: If you have existing custom fields on your project and you want them to stay, you must include that data in the request body or they will be removed
 const myHeaders = new Headers();
 const userName = "email address or API KEY here";
 const password = "password";
