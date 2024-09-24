@@ -1,4 +1,5 @@
-// This code sample is an example of looping through the time entreis data for the V2 time entries endpoint. 
+// This code sample is an example of looping through the time entries data for the V2 time entries endpoint. 
+// Filters set to display all timelogs including archived projects time
 // A function to display response headers also included. Comment out if you do not require this information. 
 // Endpoint Url: https://" + siteName + ".teamwork.com/projects/api/v2/time.json
 const myHeaders = new Headers();
@@ -19,7 +20,7 @@ const requestOptions = {
 
 async function fetchTime() {
     do {
-        let latestActivityUrl = "https://" + siteName + ".teamwork.com/projects/api/v2/time.json?page=" + page + "&pageSize=50&getTotals=true&projectId=&companyId=0&userId=&assignedTeamIds=&invoicedType=all&billableType=all&fromDate=&toDate=&sortBy=date&sortOrder=asc&onlyStarredProjects=false&includeArchivedProjects=false&matchAllTags=true&projectStatus=all"
+        let latestActivityUrl = "https://" + siteName + ".teamwork.com/projects/api/v2/time.json?page=" + page + "&pageSize=500&getTotals=true&projectId=&companyId=0&userId=&assignedTeamIds=&invoicedType=all&billableType=all&fromDate=&toDate=&sortBy=date&sortOrder=asc&onlyStarredProjects=false&includeArchivedProjects=true&matchAllTags=false&projectStatus=all"
         const response = await fetch(latestActivityUrl, requestOptions)
         let data = await response.json()
         console.log(data)
