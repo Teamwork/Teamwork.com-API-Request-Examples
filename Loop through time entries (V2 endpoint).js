@@ -20,8 +20,8 @@ const requestOptions = {
 
 async function fetchTime() {
     do {
-        let latestActivityUrl = "https://" + siteName + ".teamwork.com/projects/api/v2/time.json?page=" + page + "&pageSize=500&getTotals=true&projectId=&companyId=0&userId=&assignedTeamIds=&invoicedType=all&billableType=all&fromDate=&toDate=&sortBy=date&sortOrder=asc&onlyStarredProjects=false&includeArchivedProjects=true&matchAllTags=false&projectStatus=all"
-        const response = await fetch(latestActivityUrl, requestOptions)
+        let timeEntryUrl = "https://" + siteName + ".teamwork.com/projects/api/v2/time.json?page=" + page + "&pageSize=500&getTotals=true&projectId=&companyId=0&userId=&assignedTeamIds=&invoicedType=all&billableType=all&fromDate=&toDate=&sortBy=date&sortOrder=asc&onlyStarredProjects=false&includeArchivedProjects=true&matchAllTags=false&projectStatus=all"
+        const response = await fetch(timeEntryUrl, requestOptions)
         let data = await response.json()
         console.log(data)
         if (page < response.headers.get('x-pages')) {
