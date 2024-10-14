@@ -10,12 +10,12 @@ myHeaders.append("Authorization", "Basic " + btoa(userName + ":" + password));
 
 const raw = JSON.stringify({
   "project": {
-    "use-board": 0,
+    "use-board": 1,
     "use-table": 0,
     "use-milestones": 0,
     "use-forms": 0,
     "use-tickets": 0,
-    "use-messages": 0,
+    "use-messages": 1,
     "use-gantt": 0,
     "use-proofs": 0,
     "use-riskregister": 0,
