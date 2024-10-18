@@ -379,7 +379,7 @@ function getUsers(users, includedData, length) {
 
   var iterate = 0
   do {
-    assignees += includedData[user[iterate].toString()].firstName + " " + includedData[user[iterate].toString()].lastName;
+    assignees += includedData[users[iterate].toString()].firstName + " " + includedData[users[iterate].toString()].lastName;
     iterate++
     if (iterate == length) {
 
@@ -393,4 +393,14 @@ function getUsers(users, includedData, length) {
 
 function alertMessage() {
   SpreadsheetApp.getUi().alert("No records found based on the filters specified");
+}
+
+function toHoursAndMinutes(totalMinutes) {
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+
+  return `${padToTwoDigits(hours)}:${padToTwoDigits(minutes)}`;
+}
+function padToTwoDigits(num) {
+  return num.toString().padStart(2, '0');
 }
