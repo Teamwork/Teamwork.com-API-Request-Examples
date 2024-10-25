@@ -1,6 +1,7 @@
 // This code sample is an example of looping through the time entries data for the V2 time entries endpoint. 
 // Filters set to display all timelogs including archived projects time
 // A function to display response headers also included. Comment out if you do not require this information. 
+// Endpoint Url: https://" + siteName + ".teamwork.com/time_entries.json
 // Endpoint Url: https://" + siteName + ".teamwork.com/projects/api/v2/time.json
 const myHeaders = new Headers();
 const userName = "email address or API KEY here";
