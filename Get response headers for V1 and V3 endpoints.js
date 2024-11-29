@@ -1,3 +1,5 @@
+// This code sample will make a request to to your sepcified V1 or V1 endpoints and return pagination andn rate limit information
+// Comment out the header section for the API endpoint you are not requesting
 const myHeaders = new Headers();
 const userName = "email address or API KEY here";
 const password = "password";
@@ -29,6 +31,10 @@ async function fetcHeaders() {
     console.log(`Page offset: ${data.meta.page.pageOffset} - Page(${data.meta.page.pageOffset+1})`) // Page offset starts at 0 for page 1, pageoffset 1 for page 2, etc
     console.log(`Page Size: ${data.meta.page.pageSize}`)
     console.log(`Has More: ${data.meta.page.hasMore}`) */
+    console.log("\nHeaders - Rate limit info")
+    console.log(`x-ratelimit-limit:: ${response.headers.get('x-ratelimit-limit')}`)
+    console.log(`x-ratelimit-remaining:: ${response.headers.get('x-ratelimit-remaining')}`)
+    console.log(`x-ratelimit-reset:: ${response.headers.get('x-ratelimit-reset')}`)
 }
 
 fetcHeaders();
