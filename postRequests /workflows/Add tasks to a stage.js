@@ -1,3 +1,5 @@
+// This code sample will move one or multiple tasks into a workflow stage
+// Endpoint documentation: https://apidocs.teamwork.com/docs/teamwork/endpoints-by-object/workflows/post-projects-api-v3-workflows-workflow-id-stages-stage-id-tasks-json
 const myHeaders = new Headers();
 const userName = "email address or API KEY here";
 const password = "password";
