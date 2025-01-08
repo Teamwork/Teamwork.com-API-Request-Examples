@@ -1,3 +1,4 @@
+// Please note that this is an undocumented endpoint so it could be removed at any stage
 const myHeaders = new Headers();
 const userName = "email address or API KEY here";
 const password = "password";
