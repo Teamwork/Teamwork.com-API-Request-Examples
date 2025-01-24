@@ -13,6 +13,7 @@ myHeaders.append("Authorization", "Basic " + btoa(userName + ":" + password));
 const raw = JSON.stringify({
   "task": {
     "name": "Task added directly to a stage again",
+    "description": "My description here",
     "tasklistId": tasklistId,
     "startAt": "2025-01-24",
     "dueAt": "2025-01-27",
