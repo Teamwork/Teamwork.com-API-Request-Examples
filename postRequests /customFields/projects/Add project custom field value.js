@@ -5,7 +5,7 @@ const myHeaders = new Headers();
 const userName = "email address or API KEY here";
 const password = "password";
 const siteName = "yourSiteName"
-const companyId = "projectIdHere"
+const projectId = "projectIdHere"
 const customfieldId = customfieldIdhere; // integer - Project custom field id
 
 const raw = JSON.stringify({
