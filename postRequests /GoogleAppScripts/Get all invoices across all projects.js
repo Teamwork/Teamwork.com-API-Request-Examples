@@ -5,11 +5,11 @@ The script captures the invoice status option from the settings sheet and uses t
 API Call: 
 GET ${TeamworkURL}/invoices.json?type=${invoiceStatus}
     ${TeamworkURL}/projects/api/v3/invoices/${invoice["id"].toString()}.json
+    ${TeamworkURL}/projects/api/v3/projects/${invoice["project-id"].toString()}.json?include=projectCategories;
 Author: Marc Cashman <marc.cashman@teamwork.com>
-Version: 1.1
+Version: 1.2
+Update: Project Category added to report
 */
-
-//https://docs.google.com/spreadsheets/d/{addYourSheetIdHere}/edit#gid=0 this is not required but good to know what sheet is attached
 
 function onOpen() {
   var ui = SpreadsheetApp.getUi();
@@ -19,10 +19,11 @@ function onOpen() {
 }
 
 // Credentials and request header data
-const APIKey = "";//username used to log into Teamwork.com - preferably a Site admin so there are no missed timelogs due to permissions
-const Pass = "xxx";// User password linked to username above to log into Teamwork.com - leave xxx if you are adding your api key as the username
-const GoogleSheetId = "addYourSheetIdHere"; // this id can be found in the middle of your Google sheet URL inbetween /d/ and /edit
-const TeamworkURL = "";//site domain - ie: https://yourSiteName.teamwork.com
+const APIKey = "twp_iS18Xq5z8jPpwHjmAs1f8aC8LZoM";//username used to log into Teamwork.com - preferably a Site admin so there are no missed timelogs due to permissions
+const CustTeamworkURL = "";//site domain - ie: https://yourSiteName.teamwork.com
+const Pass = "xxx";// User password linked to username above to log into Teamwork.com
+const GoogleSheetId = "1EbOBMxWo93DkHxH4_pqt5gw3H6ucgmtN0Y6akkFDLa8"; // this id can be found in the middle of your Google sheet URL inbetween /d/ and /edit
+const TeamworkURL = "https://marccashman.teamwork.com";//site domain - ie: https://yourSiteName.teamwork.com
 
 var values = [];
 
@@ -37,6 +38,7 @@ var params = {
 };
 
 function getInvoicesReport() {
+  //https://docs.google.com/spreadsheets/d/1EbOBMxWo93DkHxH4_pqt5gw3H6ucgmtN0Y6akkFDLa8/edit#gid=0
   var ss = SpreadsheetApp.openById(GoogleSheetId);
   var settingsSheet = ss.getSheetByName('Settings');
   var reportSheet = ss.getSheetByName("Invoice Report");
@@ -44,10 +46,10 @@ function getInvoicesReport() {
 
   /* Preparing invoice report sheet*/
   reportSheet.clear();
-  var header = [["Issue Date", "Invoice Id", "Invoice Description", "Client Name", "Project Name", "Time Cost", "Expenses Cost", "Total cost", "Invoice Type", "Invoiced Status", "Completed Date"]];
+  var header = [["Issue Date", "Invoice Id", "Invoice Description", "Category", "Client Name", "Project Name", "Time Cost", "Expenses Cost", "Total cost", "Invoice Type", "Invoiced Status", "Completed Date"]];
   var range = reportSheet.getRange(reportSheet.getLastRow() + 1, 1, header.length, header[0].length);
 
-  var currencyColumns = reportSheet.getRange("F:H");
+  var currencyColumns = reportSheet.getRange("G:I");
   currencyColumns.setNumberFormat("$#,##00.00");
 
   var centerColumns = reportSheet.getRange("A:B");
@@ -81,7 +83,7 @@ function getInvoicesReport() {
 
   // loop over the returned data to get values required for report
   for (var i = 0; i < report.length; i++) {
-
+    var projectCategory = "";
     var invoice = report[i];
 
     /* Build Clickable links for project billing page and each invoice */
@@ -96,6 +98,19 @@ function getInvoicesReport() {
       var dateCompleted = Utilities.formatDate(new Date(invoice["date-updated"]), "GMT", "dd/MM/yyyy")
     } else {
       var dateCompleted = "";
+    }
+
+    var projectCatUrl = `${TeamworkURL}/projects/api/v3/projects/${invoice["project-id"].toString()}.json?include=projectCategories`;
+    var projectCatResponse = UrlFetchApp.fetch(projectCatUrl, params);
+    var projectCatJsonData = JSON.parse(projectCatResponse);
+    Logger.log(projectCatJsonData);
+
+    
+    var catId = projectCatJsonData.project.categoryId;
+    Logger.log(catId);
+    if(catId != null){
+    projectCategory = projectCatJsonData.included.projectCategories[`${catId}`].name;
+    Logger.log(projectCategory);
     }
 
     var v3InvoiceUrl = `${TeamworkURL}/projects/api/v3/invoices/${invoice["id"].toString()}.json`;
@@ -115,6 +130,7 @@ function getInvoicesReport() {
         dateCreated,
         invoiceUrlParsed,
         singleInvoice["description"],
+        projectCategory,
         singleInvoice["companyName"],
         projectUrlParsed,
         singleInvoice["totalTimeBillable"],
@@ -127,4 +143,6 @@ function getInvoicesReport() {
     );
   }
   reportSheet.getRange(reportSheet.getLastRow() + 1, 1, values.length, values[0].length).setValues(values);
+  /* var cell = sheet.getRange("L1");
+  cell.setFormula("=QUERY(A:H,\"SELECT A, sum(C),sum(D),sum(E),sum(F),sum(G) where A !='' GROUP BY A label A 'Client', sum(C) 'Total time cost', sum(D) 'Total Expenses cost', sum(E) 'Total cost', sum(F) 'Total Time (Hr:M)', sum(G) 'Total Time in Minutes'\",1)"); */
 }
