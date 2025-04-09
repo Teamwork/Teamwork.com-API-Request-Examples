@@ -12,26 +12,26 @@ const raw = JSON.stringify({
         {
             //sample Text based Field
             "id": 86074,// This ID is for the value of the custom field which is unique to this task only
-            "customfieldId": 2794,// This ID is for the custom field entity which is a site wide id
+            "customfieldId": 2794,// "customfieldId" is for the custom field entity which is a site wide id
             "value": "Value edited by API"
             //sample Text based Field
         },
         {
             //sample Dropdown based Field
             "id": 86073,// This ID is for the value of the custom field which is unique to this task only
-            "customfieldId": 2558,// This ID is for the custom field entity which is a site wide id
+            "customfieldId": 2558,// "customfieldId" is for the custom field entity which is a site wide id
             "value": "Submitted"
         }, 
         {
             //sample Integer based Field
             "id": 86075,// This ID is for the value of the custom field which is unique to this task only
-            "customFieldId": 2740,// This ID is for the custom field entity which is a site wide id
+            "customFieldId": 2740,// "customfieldId" is for the custom field entity which is a site wide id
             "value": 897
         },
         {
             //sample Date based Field
             "id": 86076,// This ID is for the value of the custom field which is unique to this task only
-            "customFieldId": 2739,// This ID is for the custom field entity which is a site wide id
+            "customFieldId": 2739,// "customfieldId" is for the custom field entity which is a site wide id
             "value": "2024-05-13"//YYYY-MM-DD
         }
     ]
