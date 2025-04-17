@@ -13,7 +13,7 @@ myHeaders.append("Content-Type", "application/json");
 myHeaders.append("Authorization", "Basic "+btoa(userName+":"+password));
 
 const raw = JSON.stringify({
-  "customfieldCompany": {
+  "customfieldProject": {
     "countryCode": "",
     "currencySymbol": "",
     "customfieldId": customfieldId,
