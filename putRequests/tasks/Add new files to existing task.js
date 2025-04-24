@@ -25,5 +25,5 @@ const requestOptions = {
 
 fetch(`https://${siteName}.teamwork.com/tasks/${taskId}.json`, requestOptions)
   .then((response) => response.text())
-  .then((result) => console.log(result))
+  .then((result) => console.log(result))// Successfull request = {"STATUS":"OK","assignedFileIds":["11099894","11099895"],"relativeRemindersMoved":false,"affectedTaskIds":"41856377"}
   .catch((error) => console.error(error));
