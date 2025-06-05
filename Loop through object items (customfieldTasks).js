@@ -8,6 +8,7 @@ const myHeaders = new Headers();
 const userName = "email address or API KEY here";
 const password = "password";
 const siteName = "yourSiteName"
+const customfieldId = "customfieldIdHere"
 
 let page = 1
 
@@ -21,7 +22,7 @@ const requestOptions = {
 
 async function fetchTime() {
     do {
-        let tasksUrl = "https://" + siteName + ".teamwork.com/projects/api/v3/tasks.json?includeCompletedTasks=true&includeCustomFields=true&customField[4532][any]=Approved,Needs attention&page=" + page
+        let tasksUrl = `https://${siteName}.teamwork.com/projects/api/v3/tasks.json?includeCompletedTasks=true&includeCustomFields=true&customField[${customfieldId}][any]=Approved,Needs attention&page=${page}`
         const response = await fetch(tasksUrl, requestOptions)
 
         let data = await response.json()
