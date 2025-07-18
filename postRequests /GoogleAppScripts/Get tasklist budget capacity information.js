@@ -14,13 +14,16 @@ Author: Marc Cashman <marc.cashman@teamwork.com>
 Version: 1.1
 */
 //https://docs.google.com/spreadsheets/d/1B0hP-l80GHR65zNoRqwNPvmxNPTWLTYprBGHns-9ubs/edit#gid=0
-var ss = SpreadsheetApp.openById('1B0hP-l80GHR65zNoRqwNPvmxNPTWLTYprBGHns-9ubs');
+
 var reportSheet = ss.getSheetByName("Budget Report ($ value)");
 var reportTimeSheet = ss.getSheetByName("Budget Report (Time based)");
 var settingsSheet = ss.getSheetByName('Settings');
 var APIKey = "";//username used to log into Teamwork.com - preferably a Site admin so there are no missed timelogs due to permissions
 var Pass = "";// User password linked to username above to log into Teamwork.com
 var TeamworkURL = "";//site domain - ie: https://yourSiteName.teamwork.com
+var GoogleSheetId = "addYourSheetIdHere" // this id can be found in the middle of your Google sheet URL inbetween /d/ and /edit
+
+var ss = SpreadsheetApp.openById(`${GoogleSheetId}`);
 
 var headers = {
   "Authorization": "Basic " + Utilities.base64Encode(APIKey + ':' + Pass)
