@@ -1,4 +1,3 @@
-
 // This code sample will return a payload of all folders for a Google drive account linked to a site. 
 // The accessible folders will be based on the root folder selected at site level
 // Endpoint Url: https://${siteName}.teamwork.com/integrations/googledrive/folder.json
