@@ -1,10 +1,13 @@
+// This code sample will create a tasklist based of a specified tasklist template
+// The ability to assign tasks based on the choose later option is also available if required
+// Endpoint documentation: https://apidocs.teamwork.com/docs/teamwork/v1/task-lists/post-projects-id-tasklists-json
 const myHeaders = new Headers();
 const userName = "email address or API KEY here";
 const password = "password";
 const siteName = "yourSiteName"
 const projectId = "projectIdHere"
 const userId = "userIdHere"
-const taskTempId = "taskTempIdHere"
+const taskTempId = "taskTempIdHere" // This id can be captured via the browser address bar or use the following endpoint: https://apidocs.teamwork.com/docs/teamwork/v1/task-lists/get-tasklists-templates-json
 myHeaders.append("Content-Type", "application/json");
 myHeaders.append("Authorization", "Basic " + btoa(userName + ":" + password));
 
@@ -15,7 +18,7 @@ const raw = JSON.stringify({
     "private": false,
     "isBillable": null,
     "description": "Note to apply to new list",
-    "milestone-id": 0,// Milestone id here if appliciable
+    "milestone-id": 0,// Milestone id here if appliciable - use https://apidocs.teamwork.com/docs/teamwork/v1/milestones/get-milestones-json to get milestone id if required
     "icon": "",
     "name": "Sketching and AutoCAD drawings for today",
     "grant-access-to": "",
@@ -53,7 +56,7 @@ const requestOptions = {
   redirect: "follow"
 };
 
-fetch("https://" + siteName + ".teamwork.com/projects/" + projectId + "/tasklists.json", requestOptions)
+fetch(`https://${siteName}.teamwork.com/projects/${projectId}/tasklists.json`, requestOptions)
   .then((response) => response.text())
   .then((result) => console.log(result))
   .catch((error) => console.error(error));
