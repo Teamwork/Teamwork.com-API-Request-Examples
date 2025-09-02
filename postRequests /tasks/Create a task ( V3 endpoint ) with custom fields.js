@@ -21,6 +21,11 @@ const raw = JSON.stringify({
     "priority": "medium",
     "startAt": "2024-04-16",
     "dueAt": "2024-04-24",
+    "tagIds": [
+            126792,
+            126786
+        ],
+    "estimatedMinutes": 420, // This must be an integer and related to total estimated minutes ie: 420 would be 7 hours
     "description": "This task was created with the V3 [Create a task endpoint](https://apidocs.teamwork.com/docs/teamwork/v3/tasks/post-projects-api-v3-tasklists-tasklist-id-tasks-json)",
     "customFields": [
         {
