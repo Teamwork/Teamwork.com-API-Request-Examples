@@ -1,4 +1,4 @@
-// This code sample will create a task with the following infiormation
+// This code sample will create a task with the following information
 // > assign to a user or users if more are added 
 // > notify user(s) 
 // > put task on a workflow stage
