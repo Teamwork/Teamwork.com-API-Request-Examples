@@ -77,7 +77,7 @@ const requestOptions = {
   redirect: "follow"
 };
 
-fetch("https://" + siteName + ".teamwork.com/projects/api/v3/tasklists/" + taskListId + "/tasks.json", requestOptions)
+fetch(`https://${siteName}.teamwork.com/projects/api/v3/tasklists/${taskListId}/tasks.json`, requestOptions)
   .then((response) => response.text())
   .then((result) => console.log(result))
   .catch((error) => console.error(error));
