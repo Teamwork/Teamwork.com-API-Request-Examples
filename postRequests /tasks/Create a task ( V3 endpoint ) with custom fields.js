@@ -23,23 +23,17 @@ const raw = JSON.stringify({
     "name": "Creating a task from the Teamwork.com API",
     "tagIds": tagIds,
     "assignees": {
-      "userIds": [
-        userId
-      ],
+      "userIds": userId,
       "teamIds": [],
       "companyIds": []
     },
     "changeFollowers": {
-      "userIds": [
-        changeFollowerId
-      ],
+      "userIds": changeFollowerId,
       "teamIds": [],
       "companyIds": []
     },
     "commentFollowers": {
-      "userIds":
-        commentFollowerId
-      ,
+      "userIds": commentFollowerId,
       "teamIds": [],
       "companyIds": []
     },
