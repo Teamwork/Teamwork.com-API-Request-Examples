@@ -45,7 +45,7 @@ const raw = JSON.stringify({
       }
     ],
     "estimated-minutes": 0,
-    "pendingFileAttachments": [],
+    "pendingFileAttachments": "tf_0962800c-211d-467f-a280-6407e46daa2c.png,tf_1d6a09c2-4725-4e9b-a72f-4335de87e738.png", // Comma separate multiple file reference ids if appliciable - Leave blank if no file is required
     "updateFiles": true,
     "attachments": "",
     "removeOtherFiles": true,
