@@ -20,7 +20,6 @@ function onOpen() {
 
 // Credentials and request header data
 const APIKey = "";//username used to log into Teamwork.com - preferably a Site admin so there are no missed timelogs due to permissions
-const CustTeamworkURL = "";//site domain - ie: https://yourSiteName.teamwork.com
 const Pass = "xxx";// User password linked to username above to log into Teamwork.com
 const GoogleSheetId = ""; // this id can be found in the middle of your Google sheet URL inbetween /d/ and /edit
 const TeamworkURL = "";//site domain - ie: https://yourSiteName.teamwork.com
@@ -65,7 +64,6 @@ function getInvoicesReport() {
   var response = UrlFetchApp.fetch(url, params);
   var jsonData = JSON.parse(response);
   
-
   var report = jsonData.invoices;
   Logger.log(report);
 
@@ -103,21 +101,17 @@ function getInvoicesReport() {
     var projectCatUrl = `${TeamworkURL}/projects/api/v3/projects/${invoice["project-id"].toString()}.json?include=projectCategories`;
     var projectCatResponse = UrlFetchApp.fetch(projectCatUrl, params);
     var projectCatJsonData = JSON.parse(projectCatResponse);
-    Logger.log(projectCatJsonData);
 
-    
     var catId = projectCatJsonData.project.categoryId;
-    Logger.log(catId);
+
     if(catId != null){
     projectCategory = projectCatJsonData.included.projectCategories[`${catId}`].name;
     Logger.log(projectCategory);
     }
 
     var v3InvoiceUrl = `${TeamworkURL}/projects/api/v3/invoices/${invoice["id"].toString()}.json`;
-    Logger.log(v3InvoiceUrl);
     var v3InvoiceResponse = UrlFetchApp.fetch(v3InvoiceUrl, params);
     var v3InvoiceJsonData = JSON.parse(v3InvoiceResponse);
-    Logger.log(v3InvoiceJsonData);
     var singleInvoice = v3InvoiceJsonData.invoice;
     var dateCreated = Utilities.formatDate(new Date(singleInvoice["dateCreated"]), "GMT", "dd/MM/yyyy");
 
