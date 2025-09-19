@@ -1,0 +1,89 @@
+/* 
+This script will request all webhooks for each project in the list on the attached sheet. 
+Data required for this script is 
+- A column of project ids,
+API Calls: 
+GET /projects/:projectId/webhooks.json
+Author: Marc Cashman <marc.cashman@teamwork.com>
+Version: 1.1
+*/
+
+//https://docs.google.com/spreadsheets/d/{addYourSheetIdHere}/edit#gid=0 this is not required but good to know what sheet is attached
+
+function onOpen() {
+  var ui = SpreadsheetApp.getUi();
+  var menu = ui.createMenu('Pull Report');
+  menu.addItem('Get webhook info', 'getWebhookInfo');
+  menu.addToUi();
+}
+
+// Credentials and request header data
+const APIKey = "";//username used to log into Teamwork.com - preferably a Site admin so there are no missed timelogs due to permissions
+const Pass = "xxx";// User password linked to username above to log into Teamwork.com - leave xxx if you are adding your api key as the username
+const GoogleSheetId = "addYourSheetIdHere"; // this id can be found in the middle of your Google sheet URL inbetween /d/ and /edit
+const TeamworkURL = "";//site domain - ie: https://yourSiteName.teamwork.com
+
+const headers = {
+  "Authorization": "Basic " + Utilities.base64Encode(APIKey + ':' + Pass)
+};
+
+var params = {
+  "method": "GET",
+  'muteHttpExceptions': true,
+  "headers": headers
+};
+
+function getWebhookInfo() {
+  const ss = SpreadsheetApp.openById(`${GoogleSheetId}`);
+  const idsSheet = ss.getSheets()[0];
+  const responseSheet = ss.getSheets()[1];
+  const sourceRows = idsSheet.getDataRange().getLastRow();
+  const source = idsSheet.getDataRange().getValues();
+  
+  let loop = 1 // Loop to be used later to iterate through project ids
+  
+  do {
+    var projectWebhookUrl = `${TeamworkURL}/projects/${source[loop][0]}/webhooks.json`
+    const webhookDataResponse = UrlFetchApp.fetch(projectWebhookUrl, params);
+    const webhookDataJsonData = JSON.parse(webhookDataResponse);
+    var webhookStatusCode = webhookDataResponse.getResponseCode();
+    var projectWebhookUrlParsed = `=HYPERLINK("${projectWebhookUrl}","${source[loop][0]}")`;
+    //dataToCells(responseSheet, projectWebhookUrlParsed, webhookStatusCode, webhookDataResponse,webhookDataJsonData);
+    dataToCells(responseSheet, source[loop][0], projectWebhookUrlParsed, webhookStatusCode, webhookDataResponse,webhookDataJsonData);
+    console.log(webhookStatusCode);
+    console.log(webhookDataJsonData);
+    console.log(webhookDataJsonData.webhooks.length)
+    loop++
+  } while (loop < sourceRows)
+}
+
+function dataToCells(responseSheet, projectId, projectWebhookUrlParsed, webhookStatusCode, webhookDataResponse,webhookDataJsonData) {
+  var passedUrl = [];
+  var moreData = [];
+  var title = [];
+  var webhookCount = parseInt(webhookDataJsonData.webhooks.length)
+  if(webhookCount > 0){
+  for (var x = 0; x < webhookCount; x++){
+    passedUrl.push([webhookDataJsonData.webhooks[x].id, webhookDataJsonData.webhooks[x].event, webhookDataJsonData.webhooks[x].status, webhookDataJsonData.webhooks[x].url]);
+    
+  }
+  
+  var len = passedUrl.length;
+
+  responseSheet.insertRows(2, len);
+
+  //paste in the values
+  responseSheet.getRange(2, 1, len, 4).setValues(passedUrl).setBackgroundRGB(255, 255, 255);
+  
+  title.push([`Project Id: ${projectId} - ${webhookCount} webhooks`]);
+  var len = title.length;
+  responseSheet.insertRows(2);
+
+var changeRange = responseSheet.getRange("A2:D2");
+changeRange.setBackgroundRGB(240, 240, 240);
+responseSheet.getRange(2, 1, len, 1).setValues(title).setFontWeight("bold");
+  }
+
+ // passedUrl.push([projectWebhookUrlParsed, webhookStatusCode, webhookDataResponse, webhookDataJsonData.webhooks.length]);
+
+}
