@@ -1,0 +1,149 @@
+//Proof of concept to get a comment from a linked task on ticket added as a note.
+//Endpoints used: 4
+//Search for ticket with task id from comment webhook - TeamworkURL + "/desk/api/v2/search/tickets.json?task=" + taskId;
+//Get task by id to retrieve the task name - https://apidocs.teamwork.com/docs/teamwork/1e3f1692a62a5-get-a-specific-task
+//Get users to retrieve user name - https://apidocs.teamwork.com/docs/teamwork/f770923f4bd87-returns-a-list-of-people
+//Reply to ticket to add the note - https://apidocs.teamwork.com/docs/desk/0f3315d9a0762-reply-to-ticket
+//Author: Marc Cashman <marc.cashman@teamwork.com>
+//Version: 1.1
+//Script: {Web app Script URL} - similar to https://script.google.com/macros/s/AKfycbzcCcvkHvaA6xH0kFaTldwYDnvbGk_le8mkMm1y-i1B7yYsdfsdv6xcvxvcxv/exec
+//Sheet: {Linked Google Sheets URL} - similar to https://docs.google.com/spreadsheets/d/1qOrHmnRadKzmAv2qM28V5o4ax7mcUBJ-dsfgsadfgser545/edit#gid=0
+function doPost(e) {
+  const ss = SpreadsheetApp.openById('{googleSheetId}');//Add your sheet ID in this section. I always add the full URL in a comment above for clarity especiaslly if you start growing more google scripts and sheets The id is inbetween d/..../edit in the sheets url - (1qOrHmnRadKzmAv2qM28V5o4ax7mcUBJ-dsfgsadfgser545)
+  const payloadSheet = ss.getSheets()[0];// Webhook payload sheet for raw data
+  const dataSheet = ss.getSheets()[1];// Extracted data from webhook and API calls
+  const errorSheet = ss.getSheets()[2];// Logs errors when they appear
+  payloadSheet.appendRow([e.postData.contents]);
+  const lastRow = Math.max(payloadSheet.getLastRow(), 1);
+  payloadSheet.insertRowAfter(lastRow);
+  const data = JSON.parse(e.postData.contents);
+  const webhookDate = Utilities.formatDate(new Date(), "GMT+1", "dd/MM/yyyy HH:mm:ss");
+
+  // Only carry out API checks and requests if the comment is from a task
+  const objectType = data["comment"]["objectType"];
+  if (objectType == "task") {
+    try {
+      webhookPayload(dataSheet, data, webhookDate, objectType);
+    } catch (err) {
+      errorLog(errorSheet, err, webhookDate);
+    }
+  }
+}
+
+const APIKey = "{{userEmail}}";//username used to log into Teamwork.com - preferably a Site admin so there are no hidden timelogs
+const TeamworkURL = "{{domainAddress}}";//site domain - ie: https://yourSiteName.teamwork.com
+const Pass = "{{userPassword}}";// User password linked to username above to log into Teamwork.com
+const DeskApiKey = "{{V2DeskApiKey}}";// V2 API key from Teamwork Desk for Desk related API requests
+
+const headers = {
+  "Authorization": "Basic " + Utilities.base64Encode(APIKey + ':' + Pass)
+};
+
+const teamworkParams = {
+  "method": "GET",
+  'muteHttpExceptions': true,
+  "headers": headers
+};
+
+// Function to gather required information from the webhook payload
+function webhookPayload(dataSheet, data, webhookDate, objectType) {
+  const commentPayload = data["comment"];
+  const taskId = commentPayload["objectId"];
+  const commentCreator = commentPayload["userId"];
+  const commentBody = commentPayload["body"];
+
+  // Return ticket id if a task is attached
+  // If there is no ticket linked to task then 0 is returned
+  const ticketId = callTicket(taskId);
+  // Add note to ticket if one exists
+  if (ticketId != 0) {
+    // Request for task name
+    const taskName = callTask(taskId);
+    // POST request to add note to ticket after comment creator name has been extracted
+    addNote(ticketId, taskId, taskName, commentCreator, commentBody)
+    //Pass data to google sheet
+    dataToCells(dataSheet, webhookDate, objectType, taskId, commentCreator, commentBody, ticketId, taskName);
+  }
+}
+
+// Function to populate all important data to a sheet for clarity while testing the process
+function dataToCells(dataSheet, webhookDate, objectType, taskId, commentCreator, commentBody, ticketId, taskName) {
+  var passedUrl = [];
+  passedUrl.push([webhookDate, objectType, ticketId, taskId, taskName, commentCreator, commentBody]);
+  const len = passedUrl.length;
+  dataSheet.insertRows(2, len);
+  dataSheet.getRange(2, 1, len, 7).setValues(passedUrl);
+}
+
+// Function to get ticket id if the task is linked
+function callTicket(taskId) {
+
+  var deskParams = {
+    'method': 'GET',
+    'muteHttpExceptions': true,
+    'headers': {
+      'Authorization': `Bearer ${DeskApiKey}`
+    }
+  };
+
+  const ticketUrl = `${TeamworkURL}/desk/api/v2/search/tickets.json?task=${taskId}`;
+  const ticketResponse = UrlFetchApp.fetch(ticketUrl, deskParams);
+  const ticketJsonData = JSON.parse(ticketResponse);
+
+  if (ticketJsonData.tickets.length == 0) {
+    var ticketId = 0;
+  } else {
+    var ticketId = ticketJsonData.tickets[0].id;
+  }
+  return ticketId;
+}
+
+// Function to get task name
+function callTask(taskId) {
+
+  const taskUrl = `${TeamworkURL}/projects/api/v3/tasks/${taskId}.json?include=users`;
+  const taskResponse = UrlFetchApp.fetch(taskUrl, teamworkParams);
+  const taskJsonData = JSON.parse(taskResponse);
+  const subject = taskJsonData["task"]["name"];
+
+  return subject;
+}
+
+// Function to Get the users name based on id passed in
+// Add elements for the comment as a note on the associated ticket
+function addNote(ticketId, taskId, taskName, commentCreator, commentBody) {
+
+  //Get name of user who created the comment
+  const userUrl = `${TeamworkURL}/projects/api/v3/people.json?ids=${commentCreator}`;
+  const userResponse = UrlFetchApp.fetch(userUrl, teamworkParams);
+  const userJsonData = JSON.parse(userResponse);
+  const userName = userJsonData["people"][0]["firstName"] + " " + userJsonData["people"][0]["lastName"];
+
+  // Append information require for request body and add as a note to the associated ticket
+  const ticketNoteUrl = `${TeamworkURL}/desk/api/v2/tickets/${ticketId}/messages.json`
+  const commentBodyApplied = `Comment Dropped on attached Task!<br><hr><b>Task:</b> <a href='${TeamworkURL}/app/tasks/${taskId}'>${taskName}</a><br><b>Comment By:</b>${userName}<br><b>Body:</b>${commentBody}<br><hr><u>This is an automated message.</u>`
+
+  const response = UrlFetchApp.fetch(ticketNoteUrl, {
+    "method": "POST",
+    "headers": {
+      "Authorization": `Bearer ${DeskApiKey}`,
+      "Content-Type": "application/json"
+    },
+    "muteHttpExceptions": true,
+    "followRedirects": true,
+    "validateHttpsCertificates": true,
+    "contentType": "application/json",
+    "payload": JSON.stringify({ "message": commentBodyApplied, "threadType": "note" })
+  });
+}
+
+//Function for error logging
+function errorLog(errorLogSheet, err, webhookDate) {
+  var errorUrl = [];
+  errorUrl.push([webhookDate, err]);
+  const len = errorUrl.length;
+
+  errorLogSheet.insertRows(2, len);
+  errorLogSheet.getRange(2, 1, len, 2).setValues(errorUrl);
+
+}
