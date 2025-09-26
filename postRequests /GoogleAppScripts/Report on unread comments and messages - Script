@@ -1,0 +1,294 @@
+/*
+Proof of Concept script for using the Teamwork.com API to populate a list of unread messages and comments based on the project owners portfolio
+This is a unique case where the users (aka: project owners) API key is captured and the unread messages and comments are from their profile
+Settings page on linked Google sheet can be used to filter endpoints for page size - the larger the pageSize to likelyhood of the script failaing if there is a lot to capture
+Author: Marc Cashman <marc.cashman@teamwork.com>
+Version: 1.1
+THE SCRIPT IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SCRIPT OR THE USE OR OTHER DEALINGS IN THE SCRIPT.
+*/
+
+function onOpen() {
+  var ui = SpreadsheetApp.getUi();
+  var menu = ui.createMenu('Pull Report');
+  menu.addItem('Get unread comments', 'unreadComments');
+  menu.addItem('Get unread messages', 'unreadMessages');
+  menu.addToUi();
+}
+
+// Credentials and request header data
+const APIKey = "";//username used to log into Teamwork.com - This must be the site owners ApiKey or their username
+const TeamworkURL = "";//site domain - ie: https://yourSiteName.teamwork.com
+const Pass = "xxx";// User password for the site owner because the get all APIkeys endpoint requires this - if site owenr APIkey is being used above, this can be left as xxx
+const GoogleSheetId = "addYourSheetIdHere"; // this id can be found in the middle of your Google sheet URL inbetween /d/ and /edit
+
+var page = 1
+var setValues = true;
+
+var values = [];
+
+var Headers = {
+  "Authorization": `Basic ${Utilities.base64Encode(APIKey + ':' + Pass)}`,
+  "Content-Type": "application/json"
+};
+
+var GetParams = {
+  "method": "GET",
+  'muteHttpExceptions': true,
+  "headers": Headers
+};
+
+var PutParams = {
+  "method": "PUT",
+  'muteHttpExceptions': true,
+  "headers": Headers
+};
+
+function unreadMessages() {
+  var usersArray = getUsersArray();
+  var apiArray = getUsersKeys();
+
+  var ss = SpreadsheetApp.openById(GoogleSheetId);
+  var messagesSheet = ss.getSheetByName("Messages");
+  var settingsSheet = ss.getSheetByName('Settings');
+  var pageSize = settingsSheet.getRange("C2").getValue();
+  var createGroups = true;
+  const fullRowRange = messagesSheet.getRange(`1:${messagesSheet.getMaxRows()}`);
+  const fullColRange = messagesSheet.getRange(1, 1, 1, messagesSheet.getMaxColumns());
+
+  // Decrease depth repeatedly (max nesting is 8).
+  for (let i = 0; i < 8; i++) {
+    fullRowRange.shiftRowGroupDepth(-1);
+    fullColRange.shiftColumnGroupDepth(-1);
+  }
+  messagesSheet.clear();
+  var header = [["Project", "Message title", "Author", "Message Date", "Days since"]];
+  var range = messagesSheet.getRange(messagesSheet.getLastRow() + 1, 1, header.length, header[0].length);
+  range.setValues(header);
+  messagesSheet.setFrozenRows(1);
+  var count = 0;
+  var startRow = 2;
+
+  do {
+    Logger.log(apiArray[count]);
+    var usersName = `${usersArray[count].firstName} ${usersArray[count].lastName}`
+    var headers = {
+      "Authorization": `Basic ${Utilities.base64Encode(apiArray[count] + ':' + Pass)}`,
+      "Content-Type": "application/json"
+    };
+
+    Logger.log(headers)
+    Logger.log(`${usersName} ${apiArray[count]}`)
+
+    var getParams = {
+      "method": "GET",
+      'muteHttpExceptions': true,
+      "headers": headers
+    };
+
+    var messageUrl = `${TeamworkURL}/v/2/messages.json?pageSize=${pageSize}&getUnread=true&showLatestPost=true&formatMarkdown=false&getReadStatus=true&orderBy=datepostedasc&sortBy=dateposted&sortOrder=asc`;
+
+    var messageResponse = UrlFetchApp.fetch(messageUrl, getParams);
+    var messageResponseData = JSON.parse(messageResponse);
+    var messages = messageResponseData.posts || [];
+    var messageLength = messageResponseData.posts.length
+    //Logger.log(messageResponseData);
+    if (messageLength != 0) {
+      messagesSheet.appendRow([`${usersName}'s list of unread messages (${messageLength})`, "", "", "", "", "", "", ""]);
+      Logger.log(`message length: ${messageResponseData.posts.length}`);
+      messages.forEach(function (post) {
+        var postTitle = post.title || "No Title";
+        var postId = post.postId || "";
+        var id = post.id || "";
+        var projectId = post.project.id;
+        var projectName = post.project.name;
+        var messageDate = post.postedOn;
+        var daysDiff = daysBetweenDates(messageDate)
+        var user = post.author.fullName;
+        var projectUrl = `${TeamworkURL}/app/projects/${projectId}/messages`
+        var projectUrlParsed = `=HYPERLINK("${projectUrl}","${projectName}")`;
+
+        if (messages.length > 0) {
+          var messageUrl = `${TeamworkURL}/app/messages/${id}?pmp=${postId}`
+          var messageUrlParsed = `=HYPERLINK("${messageUrl}","${postTitle}")`;
+
+          messagesSheet.appendRow([projectUrlParsed, messageUrlParsed, user, messageDate, daysDiff]);
+        }
+      });
+
+      if (messages.length > 0) {
+        var userHeaderRange = messagesSheet.getRange(startRow, 1, 1, 6);
+        userHeaderRange.setFontWeight("bold");
+        var range = messagesSheet.getRange(startRow + 1, 1, messages.length, 6);
+
+        if (createGroups) range.shiftRowGroupDepth(1);
+
+        startRow += messages.length + 1;
+      } else {
+        startRow++;
+      }
+    }
+    count++
+
+  } while (count < usersArray.length)
+  // Collapse all groups
+  messagesSheet.collapseAllRowGroups();
+}
+function unreadComments() {
+  var usersArray = getUsersArray();
+  var apiArray = getUsersKeys();
+
+  var ss = SpreadsheetApp.openById(GoogleSheetId);
+  var commentsSheet = ss.getSheetByName("Comments");
+  var settingsSheet = ss.getSheetByName('Settings');
+  var pageSize = settingsSheet.getRange("B2").getValue();
+  var createGroups = true;
+
+  const fullRowRange = commentsSheet.getRange(`1:${commentsSheet.getMaxRows()}`);
+  const fullColRange = commentsSheet.getRange(1, 1, 1, commentsSheet.getMaxColumns());
+
+  // Decrease depth repeatedly (max nesting is 8).
+  for (let i = 0; i < 8; i++) {
+    fullRowRange.shiftRowGroupDepth(-1);
+    fullColRange.shiftColumnGroupDepth(-1);
+  }
+  commentsSheet.clear();
+  var header = [["Project", "Comment type", "Source Name", "Comment Body", "Comment Link", "Author", "Comment Date", "Days since"]];
+  var range = commentsSheet.getRange(commentsSheet.getLastRow() + 1, 1, header.length, header[0].length);
+  range.setValues(header);
+  commentsSheet.setFrozenRows(1);
+  var count = 0;
+  var startRow = 2;
+
+  do {
+    Logger.log(apiArray[count]);
+    var usersName = `${usersArray[count].firstName} ${usersArray[count].lastName}`
+    var headers = {
+      "Authorization": `Basic ${Utilities.base64Encode(apiArray[count] + ':' + Pass)}`,
+      "Content-Type": "application/json"
+    };
+
+    Logger.log(headers)
+    Logger.log(`${usersName} ${apiArray[count]}`)
+
+    var getParams = {
+      "method": "GET",
+      'muteHttpExceptions': true,
+      "headers": headers
+    };
+
+    var commentUrl = `${TeamworkURL}/v/2/comments.json?pageSize=${pageSize}&status=unread`;
+
+    var commentResponse = UrlFetchApp.fetch(commentUrl, getParams);
+    var commentResponseData = JSON.parse(commentResponse);
+    var comments = commentResponseData.comments || [];
+    var commentLength = commentResponseData.comments.length
+
+    if (commentLength != 0) {
+      commentsSheet.appendRow([`${usersName}'s list of unread comments (${commentLength})`, "", "", "", "", "", "", ""]);
+      Logger.log(`Comment length: ${commentResponseData.comments.length}`);
+      comments.forEach(function (comment) {
+        var projectId = comment.project.id
+        var baseUrl = `${TeamworkURL}/app/`
+        var projectUrl = `${TeamworkURL}/app/projects/${projectId}/comments`
+        var projectUrlParsed = `=HYPERLINK("${projectUrl}","${projectId}")`;
+        if (comments.length > 0) {
+          if (comment.type == "file") {
+            comment.commentLink = `${comment.fileId}?v=${comment.fileVersionNumber}&c=${comment.id}`
+            var commentUrl = `${baseUrl}files/${comment.commentLink}`
+          } else {
+            var commentUrl = `${baseUrl}${comment.commentLink}`
+          }
+          var entityUrl = `${baseUrl}${comment.type}s/${comment.commentableId}`
+          var entityUrlParsed = `=HYPERLINK("${entityUrl}","${comment.itemName}")`;
+          var commentUrlParsed = `=HYPERLINK("${commentUrl}","${comment.commentLink}")`;
+          var daysDiff = daysBetweenDates(comment.datetime)
+          console.log(projectUrlParsed, comment.type, entityUrlParsed, comment.body, commentUrlParsed, comment.author.fullName, comment.datetime, daysDiff)
+          Logger.log(comment.itemName);
+          commentsSheet.appendRow([projectUrlParsed, comment.type, entityUrlParsed, comment.body, commentUrlParsed, comment.author.fullName, comment.datetime, daysDiff]);
+        }
+      });
+
+      if (comments.length > 0) {
+        var userHeaderRange = commentsSheet.getRange(startRow, 1, 1, 6);
+        userHeaderRange.setFontWeight("bold");
+        var range = commentsSheet.getRange(startRow + 1, 1, comments.length, 6);
+        if (createGroups) range.shiftRowGroupDepth(1);
+
+        startRow += comments.length + 1;
+      } else {
+        startRow++;
+      }
+    }
+    count++
+
+  } while (count < usersArray.length)
+  // Collapse all groups
+  commentsSheet.collapseAllRowGroups();
+}
+
+function userDataOnOpen() {
+  var usersArray = getUsersArray();
+  var userAPIKeys = loopApiKeys(usersArray);
+  Logger.log(userAPIKeys)
+  var url = `${TeamworkURL}/projects/api/v3/projects.json?includeProjectUserInfo=true&fields[users]=id,firstName,lastName&include=projectOwners&includeCounts=true`
+  var response = UrlFetchApp.fetch(url, GetParams);
+  var data = JSON.parse(response.getContentText());
+
+  var usersObj = data.included.users;
+  Logger.log(usersObj);
+  // Extract users into an array
+  var usersArray = Object.values(usersObj);
+
+  PropertiesService.getScriptProperties().setProperty("USERS_ARRAY", JSON.stringify(usersArray));
+  PropertiesService.getScriptProperties().setProperty("APIKEYS_ARRAY", JSON.stringify(userAPIKeys));
+}
+
+function getUsersArray() {
+  var stored = PropertiesService.getScriptProperties().getProperty("USERS_ARRAY");
+  if (stored) {
+    return JSON.parse(stored);
+  }
+  return [];
+}
+function getUsersKeys() {
+  var stored = PropertiesService.getScriptProperties().getProperty("APIKEYS_ARRAY");
+  if (stored) {
+    return JSON.parse(stored);
+  }
+  return [];
+}
+
+function loopApiKeys(usersArray) {
+  var apiKeys = [];
+  var keys = JSON.parse(getApiKeys());
+  Logger.log("Keys data:");
+  Logger.log(keys);
+  Logger.log(`Total API Keys: ${keys.people.length}`);
+  Logger.log(`UserId: ${keys.people[0].id}`);
+  keys = keys.people || [];
+  usersArray.forEach(function (user) {
+    keys.forEach(function (key) {
+      Logger.log(`UserId from key: ${key.id}`);
+      if (key.id == user.id) {
+        Logger.log(`UserId: ${user.id}`);
+        Logger.log(key.userAPIKey);
+        apiKeys.push(key.userAPIKey)
+      }
+    });
+  });
+  return apiKeys
+}
+
+function getApiKeys() {
+  var url = `${TeamworkURL}/people/APIKeys.json`;
+
+  var payload = JSON.stringify({
+    agreedToAPITerms: true
+  });
+
+  PutParams.payload = payload
+
+  var response = UrlFetchApp.fetch(url, GetParams);
+  Logger.log(response.getContentText());
+  return response;
+}
