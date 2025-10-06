@@ -32,6 +32,11 @@ const raw = JSON.stringify({
         "customFieldId": 3860, // Refer to the Get all custom fields endpoint (append ?entities=project onto the endpoint URL for project level fields only) - https://apidocs.teamwork.com/docs/teamwork/v3/custom-fields/get-projects-api-v3-customfields-json
         "type": "dropdown",
         "value": "Paid"
+      },
+      {
+      "customFieldId": 6050,
+        "value": "https://apidocs.teamwork.com/docs/teamwork",
+        "urlTextToDisplay": "Teamwork.com API"
       }
     ], // Removed custom field objects from customFields array if there are no custom fields to be applied ie: "customFields": [],
     "isBillable": true, // Set to false if you want time to be flagged as not billable by default
