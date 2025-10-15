@@ -1,4 +1,4 @@
-// This code sample will create a project with users, tags, company, a project category, and two custom fields
+// This code sample will create a project with users, tags, company, a project category, assign a workflow and two custom fields
 // Endpoint documentation: https://apidocs.teamwork.com/docs/teamwork/v1/projects/post-projects-json
 const myHeaders = new Headers();
 const userName = "email address or API KEY here";
@@ -40,7 +40,8 @@ const raw = JSON.stringify({
       }
     ], // Removed custom field objects from customFields array if there are no custom fields to be applied ie: "customFields": [],
     "isBillable": true, // Set to false if you want time to be flagged as not billable by default
-    "projectType": "projects-template"
+    "projectType": "normal",
+    "workflowId": 1499 // Add workflow id here - comment out if you dsont want a workflow to be applied to the the project 
   }
 });
 
