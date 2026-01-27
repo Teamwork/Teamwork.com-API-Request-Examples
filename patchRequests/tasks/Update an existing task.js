@@ -1,6 +1,7 @@
 // This code sample will update a task with the following information
 // > assign to a user or users if more are added 
 // > notify user(s) 
+// add estimated time to task
 // > put task on a workflow stage
 // > add tags
 // > This will add a new custom field value to a custom field - it is important to know that the payload for the custom field object must contain existing values for custom field already populated. The payload you pass is what will exist on the task after you update so this may delete existing custom fields if they are not included
@@ -15,6 +16,7 @@ const changeFollowerId = [45678]; // Comma separate change follower user Ids if 
 const tagIds = [453455,767657];// Comma separate tagIds if required - Leave blank no tags are required
 const stageId = 54321; // integer
 const workflowId = 98765; // integer // Leave blank if you are not setting a column for the task
+const estimatedTime = 90; // integer // Leave blank if you are not setting estimated time for the task
 myHeaders.append("Content-Type", "application/json");
 myHeaders.append("Authorization", "Basic " + btoa(userName + ":" + password));
 
@@ -22,6 +24,7 @@ const raw = JSON.stringify({
   "task": {
     "name": "Creating a task from the Teamwork.com API - work now",
     "tagIds": tagIds,
+    "estimatedMinutes": estimatedTime,
     "assignees": {
       "userIds": userId,
       "teamIds": [],
