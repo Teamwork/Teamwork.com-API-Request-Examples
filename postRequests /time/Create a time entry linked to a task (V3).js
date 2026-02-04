@@ -1,4 +1,6 @@
-//https://apidocs.teamwork.com/docs/teamwork/v3/time-tracking/post-projects-api-v3-tasks-task-id-time-json
+// this code sample will log time on a task based on the task id provided
+// https://apidocs.teamwork.com/docs/teamwork/v3/time-tracking/post-projects-api-v3-tasks-task-id-time-json
+// REQUIRED FIELDS: date, time, minutes and userId
 const myHeaders = new Headers();
 const userName = "email address or API KEY here";
 const password = "password";
@@ -13,15 +15,15 @@ myHeaders.append("Authorization", "Basic "+btoa(userName+":"+password));
 
 const raw = JSON.stringify({
   "timelog": {
-    "date": date,
-    "time": time,
+    "date": date, //Required 
+    "time": time, //Required 
     "isUtc": true,
     "description": "Meeting with Marketing",
     "isBillable": true,
-    "minutes": 35,
+    "minutes": 35, //Required 
     "projectId": projectId,
     "taskId": taskId,
-    "userId": userId,
+    "userId": userId, //Required 
     "tagIds": [
       132176
     ]
