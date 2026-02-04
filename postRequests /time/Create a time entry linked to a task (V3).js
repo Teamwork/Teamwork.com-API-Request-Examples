@@ -23,7 +23,7 @@ const raw = JSON.stringify({
     "minutes": 35, //Required 
     "projectId": projectId,
     "taskId": taskId,
-    "userId": userId, //Required 
+    "userId": userId, // Required; however if this data point is removed, the time entry will be associated with the user whos API credentials are being used
     "tagIds": [
       132176
     ]
