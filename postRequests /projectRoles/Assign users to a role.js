@@ -1,4 +1,4 @@
-// This code sample will assign a project role to the list of userIds provided
+// This code sample will assign a role to the list of userIds provided
 const myHeaders = new Headers();
 const userName = "email address or API KEY here";
 const password = "password";
