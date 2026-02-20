@@ -81,24 +81,19 @@ function projectPayload(data, ss) {
     Logger.log(projectCode);
 
     payload = JSON.stringify({
-      "project": {
-        /* "name": projectName,
-         */"customfields": [
-          { "customFieldId": CodeCfId, "type": "text-short", "value": `${projectCode}` } // If you are not interested in this custom field, please comment out or remove
-        ]
-      }
+      "customfieldProject": { "customFieldId": CodeCfId, "value": `${projectCode}` } // If you are not interested in this custom field, please comment out or remove
     });
 
     const teamworkParams = {
-      "method": "PUT",
+      "method": "POST",
       'muteHttpExceptions': true,
       "headers": headers,
       "payload": payload
     };
 
-    const projectUpdateUrl = `${TeamworkURL}/projects/${projectId}.json`;
+    const cfDataAddUrl = `${TeamworkURL}/projects/api/v3/projects/${projectId}/customfields.json`;
 
-    const projectUpdateResponse = UrlFetchApp.fetch(projectUpdateUrl, teamworkParams);
+    const cfDataAddUrlResponse = UrlFetchApp.fetch(cfDataAddUrl, teamworkParams);
 
     var projectValues = [];
     var projectUrl = `${TeamworkURL}/app/projects/${projectId}/tasks/list`;
