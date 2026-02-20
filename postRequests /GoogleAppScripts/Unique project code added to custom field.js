@@ -23,9 +23,7 @@ const GoogleSheetId = "addYourSheetIdHere"; // this id can be found in the middl
 const CodeCfId = 1111; // Project custom field (Text) - Project Code
 
 // Variable initialization
-var clientAcronym = "";
-var projectType = "";
-var typeAcronym = "";
+var codeAcronym = "";
 
 var headers = {
   "Authorization": `Basic ${Utilities.base64Encode(APIKey + ':' + Pass)}`
@@ -55,7 +53,7 @@ function doPost(e) {
 }
 
 function projectPayload(data, ss) {
-  var date = Utilities.formatDate(new Date(), "GMT", "dd/MM/yyyy HH:mm:ss");// Change the timezone to yuor local timezone
+  var date = Utilities.formatDate(new Date(), "GMT", "dd/MM/yyyy HH:mm:ss");// Change the timezone to your local timezone
 
   var projectSheet = ss.getSheetByName("Project Codes");
   var errorLogSheet = ss.getSheetByName("Error Log");
@@ -69,9 +67,8 @@ function projectPayload(data, ss) {
 
     const clientResponse = UrlFetchApp.fetch(clientUrl, params);
     const clientJsonData = JSON.parse(clientResponse);
-    const clientName = clientJsonData.client.name;
-    const projectCount = clientJsonData.client.stats.projectCount;
-    var codeAcronym = "";
+    const clientName = clientJsonData.company.name;
+    const projectCount = clientJsonData.company.stats.projectCount;
     if (clientName.includes("clientFirstName")) { // Catch for clients which may have a separate department - IE: "Teamwork Desk" = TEAD1, TEAD2, etc
       const words = clientName.trim().split(" ");
       var firstPart = words[0].substring(0, 3);
@@ -85,7 +82,7 @@ function projectPayload(data, ss) {
 
     payload = JSON.stringify({
       "project": {
-        /* "name": projectOldName,
+        /* "name": projectName,
          */"customfields": [
           { "customFieldId": CodeCfId, "type": "text-short", "value": `${projectCode}` } // If you are not interested in this custom field, please comment out or remove
         ]
@@ -114,6 +111,7 @@ function projectPayload(data, ss) {
         projectUrlParsed,
         projectName,
         projectCode,
+        clientName,
         projectCount
       ]
     )
