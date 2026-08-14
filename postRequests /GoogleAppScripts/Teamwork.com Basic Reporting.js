@@ -41,7 +41,7 @@ function getProjects() {
   const includeArchivedProjects = settingsSheet.getRange("B7").getValue(); // Capture if archived projects are to be included or not
   projectSheet.clear();
 
-  var projectHeader = [["Project Id", "Poject Name", "Project Description", "Project Status", "Start Date", "End Date"]];
+  var projectHeader = [["Project Id", "Poject Name", "Project Description", "Project Status", "Start Date", "End Date", "Users on the project"]];
   var range = projectSheet.getRange(projectSheet.getLastRow() + 1, 1, projectHeader.length, projectHeader[0].length);
   range.setValues(projectHeader);
   projectSheet.getRange("B:C").setWrap(true);
@@ -63,6 +63,7 @@ function getProjects() {
     const projectResponse = UrlFetchApp.fetch(projectUrl, params);
     const projectJsonData = JSON.parse(projectResponse);
     const projectData = projectJsonData.projects;
+    const userData = projectJsonData.included.users;
     var hasMore = projectJsonData.meta.page.hasMore;
     if (projectData.length == 0) {
       hasMore = false;
@@ -70,6 +71,30 @@ function getProjects() {
     } else {
       for (var i = 0; i < projectData.length; i++) {
         var project = projectData[i];
+
+        var users = project.users
+
+        let names = [];
+
+        for (let i = 0; i < users.length; i++) {
+
+          for (let user in userData) {
+            console.log(userData[user].id)
+
+            if (userData[user].id == users[i].id) {
+              Logger.log(userData[user].firstName)
+              var firstName = userData[user].firstName
+              var lastName = userData[user].lastName
+              var fullName = `${firstName} ${lastName}`
+              names.push(fullName);
+            }
+
+          }
+
+        }
+
+        const nameString = names.join(', ');
+        
         var projectIdUrl = generateUrl(project.id, "projectId");
         project.id = "=HYPERLINK(\"" + projectIdUrl + "\",\"" + project.id + "\")";
         project.name = "=HYPERLINK(\"" + projectIdUrl + "\",\"" + project.name + "\")";
@@ -89,7 +114,8 @@ function getProjects() {
             project.description,
             project.status,
             project.startDate,
-            project.endDate
+            project.endDate,
+            nameString
           ]
         );
       }
