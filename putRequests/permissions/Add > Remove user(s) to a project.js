@@ -1,5 +1,5 @@
 // This code sample will add and or remove users from the specified project based on the ids passed into each object
-// Endpoint: https://apidocs.teamwork.com/docs/teamwork/v1/projects/put-projects-id-json
+// Endpoint: https://apidocs.teamwork.com/docs/teamwork/v1/permissions/put-projects-id-people-json
 const myHeaders = new Headers();
 const userName = "email address or API KEY here";
 const password = "password";
